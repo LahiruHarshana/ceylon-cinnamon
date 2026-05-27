@@ -72,13 +72,26 @@ h1, h2, h3, h4, .serif {
 }
 
 /* ─── Grain overlay ─────────────────────────────────────── */
+@keyframes grain-shift {
+  0%, 100% { background-position: 0% 0%; }
+  10% { background-position: -5% -3%; }
+  20% { background-position: -8% 4%; }
+  30% { background-position: 4% -7%; }
+  40% { background-position: -3% 10%; }
+  50% { background-position: 7% 3%; }
+  60% { background-position: 10% -4%; }
+  70% { background-position: -7% 7%; }
+  80% { background-position: 3% 3%; }
+  90% { background-position: -4% -7%; }
+}
 .grain {
   position: fixed;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.020;
+  opacity: 0.035;
   pointer-events: none;
   z-index: 50;
+  animation: grain-shift 6s steps(10) infinite;
 }
 
 /* ─── Keyframes ─────────────────────────────────────────── */
@@ -123,6 +136,65 @@ h1, h2, h3, h4, .serif {
 .anim-float     { animation: float 4s ease-in-out infinite; }
 .anim-float-alt { animation: float-alt 5.5s ease-in-out infinite; }
 .anim-spin-slow { animation: spin-slow 20s linear infinite; }
+
+/* ─── Scroll Progress Bar ────────────────────────────────── */
+#scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 60;
+  height: 3px;
+  background: var(--grad-amber);
+  pointer-events: none;
+  width: 0%;
+}
+
+/* ─── Section Divider ────────────────────────────────────── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(169,111,36,0.10) 20%, rgba(169,111,36,0.18) 50%, rgba(169,111,36,0.10) 80%, transparent 100%);
+}
+
+/* ─── Split Word Reveal ──────────────────────────────────── */
+.split-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.15;
+}
+.split-word-inner {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* ─── Magnetic Hover ─────────────────────────────────────── */
+[data-magnetic] {
+  transition: transform 0.1s ease-out;
+}
+
+/* ─── Form Focus Underline Animation ─────────────────────── */
+.premium-input {
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s, transform 0.2s;
+}
+.premium-input:focus {
+  transform: translateY(-1px);
+}
+
+/* ─── Active Nav Link ────────────────────────────────────── */
+.nav-link.active {
+  color: var(--amber) !important;
+  position: relative;
+}
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--grad-amber);
+  transform-origin: left;
+  animation: draw-x 0.4s ease forwards;
+}
 
 /* ─── Loader ─────────────────────────────────────────────── */
 #loader-bar {

@@ -27,6 +27,10 @@ export const metadata: Metadata = {
     "Premium Ceylon cinnamon cultivator and exporter from Sri Lanka, specializing in authentic whole and ground Ceylon cinnamon."
 };
 
+export const viewport = {
+  themeColor: "#223026", // Dark green theme for the browser tab
+};
+
 export default function RootLayout({
   children
 }: Readonly<{

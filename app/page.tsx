@@ -155,6 +155,18 @@ export default function Home() {
       lastScroll = y;
     };
 
+    const magneticCleanup: { el: Element; move: EventListener; leave: EventListener }[] = [];
+
+    function splitTextIntoWords(el: HTMLElement) {
+      const text = el.textContent?.trim();
+      if (!text || !el.hasChildNodes()) return [];
+      const words = text.split(/\s+/);
+      el.innerHTML = words
+        .map((w) => `<span class="split-word"><span class="split-word-inner">${w}</span></span>`)
+        .join(' ');
+      return Array.from(el.querySelectorAll('.split-word-inner'));
+    }
+
     const barTimer = window.setTimeout(() => {
       if (loaderBar) loaderBar.style.width = "100%";
     }, 100);
@@ -163,6 +175,11 @@ export default function Home() {
       if (loader) loader.style.opacity = "0";
       hideTimer = window.setTimeout(() => {
         if (loader) loader.style.display = "none";
+
+        document.querySelectorAll<HTMLElement>(".split-heading").forEach((el) => {
+          if (el.closest("#home")) return;
+          splitTextIntoWords(el);
+        });
 
         ctx = gsap.context(() => {
           const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -376,6 +393,107 @@ export default function Home() {
               }
             );
           });
+
+          /* ── Scroll Progress ── */
+          gsap.to("#scroll-progress", {
+            width: "100%",
+            ease: "none",
+            scrollTrigger: {
+              trigger: "body",
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.3
+            }
+          });
+
+          /* ── Counter Animation ── */
+          gsap.utils.toArray<HTMLElement>(".stat-cell").forEach((el) => {
+            const raw = el.dataset.value;
+            if (!raw || raw === "EU" || raw === "2K") return;
+            const suffix = raw.replace(/[\d.-]/g, "");
+            const target = parseInt(raw.replace(/[^\d]/g, "")) || 0;
+            if (!target) return;
+            const obj = { val: 0 };
+            gsap.to(obj, {
+              val: target,
+              duration: 2.2,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: el.closest(".card") || el,
+                start: "top 85%",
+                toggleActions: "play none none none"
+              },
+              onUpdate: () => { el.textContent = Math.round(obj.val) + suffix; }
+            });
+          });
+
+          /* ── Split-Text Reveal ── */
+          gsap.utils.toArray<HTMLElement>(".split-heading").forEach((el) => {
+            if (el.closest("#home")) return;
+            const inner = el.querySelectorAll<HTMLElement>(".split-word-inner");
+            if (!inner.length) return;
+            gsap.fromTo(inner,
+              { y: "100%", opacity: 0 },
+              {
+                y: 0, opacity: 1,
+                duration: 0.75,
+                stagger: 0.035,
+                ease: "power3.out",
+                scrollTrigger: {
+                  trigger: el,
+                  start: "top 85%",
+                  toggleActions: "play none none none"
+                },
+                onComplete: () => gsap.set(inner, { clearProps: "transform" })
+              }
+            );
+          });
+
+          /* ── Active Nav Section Tracking ── */
+          document.querySelectorAll<HTMLElement>("[data-nav]").forEach((link) => {
+            const id = link.getAttribute("data-nav");
+            const section = document.getElementById(id!);
+            if (!section) return;
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top 40%",
+              end: "bottom 40%",
+              onToggle: (self) => {
+                if (self.isActive) {
+                  document.querySelectorAll(".nav-link").forEach((l) => l.classList.remove("active"));
+                  link.classList.add("active");
+                }
+              }
+            });
+          });
+
+          /* ── Enhanced Parallax on Story Collage ── */
+          gsap.to(".story-collage-main", {
+            yPercent: -6,
+            ease: "none",
+            scrollTrigger: {
+              trigger: "#story",
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true
+            }
+          });
+        });
+
+        /* ── Magnetic Hover ── */
+        document.querySelectorAll<HTMLElement>(".card, .btn-primary, .btn-outline").forEach((el) => {
+          const move: EventListener = (e) => {
+            const rect = el.getBoundingClientRect();
+            const x = (e as MouseEvent).clientX - rect.left - rect.width / 2;
+            const y = (e as MouseEvent).clientY - rect.top - rect.height / 2;
+            gsap.to(el, { x: x * 0.2, y: y * 0.2, duration: 0.6, ease: "power3.out", overwrite: "auto" });
+          };
+          const leave: EventListener = () => {
+            gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.3)", overwrite: "auto" });
+          };
+          el.addEventListener("mousemove", move);
+          el.addEventListener("mouseleave", leave);
+          magneticCleanup.push({ el, move, leave });
         });
 
         window.addEventListener("scroll", handleScroll);
@@ -387,10 +505,34 @@ export default function Home() {
       window.clearTimeout(revealTimer);
       window.clearTimeout(hideTimer);
       window.removeEventListener("scroll", handleScroll);
+      magneticCleanup.forEach(({ el, move, leave }) => {
+        el.removeEventListener("mousemove", move);
+        el.removeEventListener("mouseleave", leave);
+      });
       ctx?.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
+
+  /* ── Mobile Menu Animation ── */
+  useEffect(() => {
+    const menu = document.getElementById("mobile-menu");
+    if (!menu) return;
+    if (menuOpen) {
+      gsap.set(menu, { display: "block" });
+      gsap.fromTo(menu, { autoAlpha: 0, y: -12 }, {
+        autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out"
+      });
+      gsap.fromTo(menu.querySelectorAll("a"), { y: -8, opacity: 0 }, {
+        y: 0, opacity: 1, stagger: 0.04, duration: 0.35, ease: "power3.out", delay: 0.1
+      });
+    } else {
+      gsap.to(menu, {
+        autoAlpha: 0, y: -6, duration: 0.25, ease: "power2.in",
+        onComplete: () => { gsap.set(menu, { display: "none" }); }
+      });
+    }
+  }, [menuOpen]);
 
   return (
     <main className="antialiased">
@@ -415,6 +557,7 @@ export default function Home() {
         </div>
       </div>
 
+      <div id="scroll-progress" />
       <div className="grain" />
 
       {/* ── Nav ────────────────────────────────────────────── */}
@@ -441,7 +584,8 @@ export default function Home() {
               <li key={item.href}>
                 <a
                   href={item.href}
-                  className="text-xs uppercase tracking-[0.18em] text-[#5a4130] transition-colors hover:text-amber-DEFAULT"
+                  data-nav={item.href.replace('#', '')}
+                  className="nav-link text-xs uppercase tracking-[0.18em] text-[#5a4130] transition-colors hover:text-amber-DEFAULT"
                 >
                   {item.label}
                 </a>
@@ -463,27 +607,29 @@ export default function Home() {
           </button>
         </div>
 
-        {menuOpen && (
-          <div className="mx-4 mt-3 rounded-xl border border-amber-border bg-white p-5 shadow-[var(--shadow-md)] lg:hidden">
-            <div className="flex flex-col gap-4">
-              {navItems.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="text-xs uppercase tracking-[0.22em] text-[#5a4130] hover:text-amber-DEFAULT transition-colors"
-                >
-                  {item.label}
-                </a>
-              ))}
-              <div className="border-t border-amber-border pt-4 mt-1">
-                <a href="#contact" className="btn-primary w-full justify-center">
-                  Inquire Now <ArrowRight size={13} />
-                </a>
-              </div>
+        <div
+          id="mobile-menu"
+          className="mx-4 mt-3 rounded-xl border border-amber-border bg-white p-5 shadow-[var(--shadow-md)] lg:hidden"
+          style={{ display: 'none' }}
+        >
+          <div className="flex flex-col gap-4">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className="text-xs uppercase tracking-[0.22em] text-[#5a4130] hover:text-amber-DEFAULT transition-colors"
+              >
+                {item.label}
+              </a>
+            ))}
+            <div className="border-t border-amber-border pt-4 mt-1">
+              <a href="#contact" className="btn-primary w-full justify-center" data-magnetic>
+                Inquire Now <ArrowRight size={13} />
+              </a>
             </div>
           </div>
-        )}
+        </div>
       </nav>
 
       <div className="relative">
@@ -512,7 +658,7 @@ export default function Home() {
                 <span className="hero-location">Molkawa Estate / Sri Lanka</span>
               </div>
 
-              <h1 className="reveal-up hero-title text-6xl font-light leading-none text-[#1a1108] md:text-8xl xl:text-[8rem]">
+              <h1 className="reveal-up hero-title split-heading text-6xl font-light leading-none text-[#1a1108] md:text-8xl xl:text-[8rem]">
                 Ceylon
                 <span className="block">Cinnamon</span>
                 <span className="block text-4xl md:text-6xl">Company</span>
@@ -524,10 +670,10 @@ export default function Home() {
               </p>
 
               <div className="mt-10 flex flex-wrap items-center gap-4">
-                <a href="#contact" className="btn-primary">
+                <a href="#contact" className="btn-primary" data-magnetic>
                   Get Sample / Inquire <ArrowRight size={14} />
                 </a>
-                <a href="#story" className="btn-outline">Our Story</a>
+                <a href="#story" className="btn-outline" data-magnetic>Our Story</a>
               </div>
 
               <div className="hero-proof-grid mt-12 grid gap-3 sm:grid-cols-3">
@@ -607,13 +753,15 @@ export default function Home() {
           <div className="mx-auto grid max-w-5xl grid-cols-2 gap-5 md:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label} className="reveal-up card card-accent p-6 text-center">
-                <div className="accent gradient-text mb-1 text-4xl font-bold leading-none">{s.num}</div>
+                <div className="accent gradient-text mb-1 text-4xl font-bold leading-none stat-cell" data-value={s.num}>{s.num}</div>
                 <div className="mb-1 text-sm font-medium text-[#1a1108]">{s.label}</div>
                 <div className="text-xs text-[#9b8472]">{s.sub}</div>
               </div>
             ))}
           </div>
         </section>
+
+        <div className="section-divider" />
 
         {/* ── Story ───────────────────────────────────────────── */}
         <section id="story" className="story-modern relative overflow-hidden px-6 py-24 md:py-32">
@@ -651,7 +799,7 @@ export default function Home() {
               {/* Copy */}
               <div className="reveal-up story-panel">
                 <div className="section-label">Our Story</div>
-                <h2 className="mb-8 text-4xl font-light leading-tight text-[#1a1108] md:text-6xl">
+                <h2 className="mb-8 split-heading text-4xl font-light leading-tight text-[#1a1108] md:text-6xl">
                   Cultivated in Molkawa,
                   <span className="serif italic" style={{ color: "var(--amber)" }}> crafted for the world</span>
                 </h2>
@@ -716,11 +864,13 @@ export default function Home() {
           </div>
         </section>
 
+        <div className="section-divider" />
+
         {/* ── Quality / Process ───────────────────────────────── */}
         <section id="quality" className="relative overflow-hidden border-y border-amber-border/30 bg-warm-50 py-24">
           <div className="reveal-up mx-auto mb-12 max-w-7xl px-6">
             <div className="section-label">International Standards</div>
-            <h2 className="text-3xl font-light text-[#1a1108] md:text-4xl">
+            <h2 className="text-3xl split-heading font-light text-[#1a1108] md:text-4xl">
               Maintaining <span className="serif italic" style={{ color: "var(--amber)" }}>Quality</span>
             </h2>
           </div>
@@ -757,6 +907,8 @@ export default function Home() {
           </div>
         </section>
 
+        <div className="section-divider" />
+
         {/* ── Products ────────────────────────────────────────── */}
         <section id="products" className="bg-white px-6 py-24">
           <div className="mx-auto max-w-6xl">
@@ -765,7 +917,7 @@ export default function Home() {
                 Cinnamomum verum
               </div>
               <div className="section-label justify-center">Our Products</div>
-              <h2 className="text-3xl font-light tracking-tight text-[#1a1108] md:text-5xl">
+              <h2 className="text-3xl split-heading font-light tracking-tight text-[#1a1108] md:text-5xl">
                 Cinnamon Products
               </h2>
             </div>
@@ -821,11 +973,13 @@ export default function Home() {
           </div>
         </section>
 
+        <div className="section-divider" />
+
         {/* ── GI Certification ────────────────────────────────── */}
         <section className="relative overflow-hidden border-y border-amber-border/30 bg-warm-100 py-24">
           <div className="reveal-up mx-auto mb-12 max-w-7xl px-6">
             <div className="section-label">EU Certification</div>
-            <h2 className="text-3xl font-light text-[#1a1108] md:text-4xl">
+            <h2 className="text-3xl split-heading font-light text-[#1a1108] md:text-4xl">
               Geographical Indication{" "}
               <span className="serif italic" style={{ color: "var(--amber)" }}>Certification</span>
             </h2>
@@ -850,12 +1004,14 @@ export default function Home() {
           </div>
         </section>
 
+        <div className="section-divider" />
+
         {/* ── True Cinnamon / Identify ─────────────────────────── */}
         <section id="identify" className="bg-white px-6 py-24">
           <div className="mx-auto max-w-6xl">
             <div className="reveal-up mb-16 max-w-3xl">
               <div className="section-label">True Cinnamon Identification</div>
-              <h2 className="mb-6 text-3xl font-light leading-tight text-[#1a1108] md:text-5xl">
+              <h2 className="mb-6 text-3xl split-heading font-light leading-tight text-[#1a1108] md:text-5xl">
                 Ceylon Cinnamon{" "}
                 <span className="serif italic" style={{ color: "var(--amber)" }}>vs Cassia</span>
               </h2>
@@ -948,13 +1104,15 @@ export default function Home() {
           </div>
         </section>
 
+        <div className="section-divider" />
+
         {/* ── Gallery ─────────────────────────────────────────── */}
         <section id="gallery" className="border-y border-amber-border/30 bg-warm-50 px-6 py-24">
           <div className="mx-auto max-w-7xl">
             <div className="reveal-up mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
               <div>
                 <div className="section-label">Production Media</div>
-                <h2 className="text-3xl font-light text-[#1a1108] md:text-4xl">
+                <h2 className="text-3xl split-heading font-light text-[#1a1108] md:text-4xl">
                   Fresh Field <span className="serif italic" style={{ color: "var(--amber)" }}>Gallery</span>
                 </h2>
               </div>
@@ -1010,6 +1168,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <div className="section-divider" />
 
         {/* ── Contact ─────────────────────────────────────────── */}
         <section id="contact" className="bg-white px-6 py-24">
