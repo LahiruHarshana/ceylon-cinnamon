@@ -980,14 +980,29 @@ export default function Home() {
 
         <div className="section-divider" />
 
-        {/* ── GI Certification ────────────────────────────────── */}
+        {/* ── GI Certification & Export Board ─────────────────── */}
         <section className="relative overflow-hidden border-y border-amber-border/30 bg-warm-100 py-24">
-          <div className="reveal-up mx-auto mb-12 max-w-7xl px-6">
-            <div className="section-label">EU Certification</div>
-            <h2 className="text-3xl split-heading font-light text-[#1a1108] md:text-4xl">
-              Geographical Indication{" "}
-              <span className="serif italic" style={{ color: "var(--amber)" }}>Certification</span>
-            </h2>
+          <div className="reveal-up mx-auto mb-12 flex max-w-7xl flex-col items-start justify-between gap-8 px-6 md:flex-row md:items-end">
+            <div className="max-w-2xl">
+              <div className="section-label">EU Certification & Board Recognition</div>
+              <h2 className="text-3xl split-heading font-light text-[#1a1108] md:text-4xl pr-4">
+                Geographical Indication{" "}
+                <span className="serif italic" style={{ color: "var(--amber)" }}>Certification</span>
+              </h2>
+            </div>
+
+            {/* EDB Logo Badge */}
+            <div 
+              className="group flex flex-shrink-0 items-center justify-center rounded-2xl border border-amber-border/40 bg-white/60 p-5 backdrop-blur-md transition-all duration-500 hover:bg-white hover:shadow-md"
+              style={{ boxShadow: "var(--shadow-sm)" }}
+            >
+              <Image
+                src={img("025-header_logo.png")}
+                alt="Sri Lanka Export Development Board"
+                width={180} height={53}
+                className="h-10 w-auto object-contain opacity-90 transition-opacity duration-300 group-hover:opacity-100 md:h-12"
+              />
+            </div>
           </div>
           <div className="menu-scroll-container reveal-up pb-8">
             {giImages.map((image, index) => (
