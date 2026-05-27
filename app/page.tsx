@@ -542,15 +542,20 @@ export default function Home() {
         id="loader"
         className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white transition-opacity duration-700"
       >
-        <Image
-          src={img("025-header_logo.png")}
-          alt="Ceylon Cinnamon Company"
-          width={160} height={47}
-          className="mb-7 h-auto w-40 object-contain"
-          priority
-        />
-        <div className="section-label justify-center mb-7" style={{ marginBottom: 20 }}>
-          True Ceylon Cinnamon
+        <div className="flex items-center gap-4 mb-8">
+          <Image
+            src={img("030-Untitled-2-65x69.webp")}
+            alt="Ceylon Cinnamon Company mark"
+            width={65} height={69}
+            className="h-16 w-auto"
+            priority
+          />
+          <div className="flex flex-col text-left">
+            <span className="font-heading text-xl md:text-2xl uppercase tracking-[0.2em] text-[#1a1108]">
+              Ceylon Cinnamon
+            </span>
+            <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#9b8472]">Sri Lanka</span>
+          </div>
         </div>
         <div className="h-[2px] w-36 overflow-hidden rounded-full bg-[#f0e8dc]">
           <div id="loader-bar" />
@@ -1263,13 +1268,21 @@ export default function Home() {
         {/* ── Footer ──────────────────────────────────────────── */}
         <footer className="border-t border-amber-border/30 bg-warm-50 px-6 py-12">
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 md:flex-row">
-            <div className="text-center md:text-left">
-              <Image
-                src={img("025-header_logo.png")}
-                alt="Ceylon Cinnamon Company footer logo"
-                width={132} height={39}
-                className="mx-auto mb-3 h-auto w-32 md:mx-0"
-              />
+            <div className="flex flex-col items-center md:items-start gap-4">
+              <div className="flex items-center gap-3">
+                <Image
+                  src={img("030-Untitled-2-65x69.webp")}
+                  alt="Ceylon Cinnamon Company mark"
+                  width={48} height={51}
+                  className="h-12 w-auto"
+                />
+                <div className="flex flex-col text-left">
+                  <span className="font-heading text-sm md:text-base uppercase tracking-[0.2em] text-[#1a1108]">
+                    Ceylon Cinnamon
+                  </span>
+                  <span className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-[#9b8472]">Sri Lanka</span>
+                </div>
+              </div>
               <p className="text-xs uppercase tracking-widest text-[#9b8472]">
                 Copyright © 2026 | Ceylon Cinnamon Company
               </p>
