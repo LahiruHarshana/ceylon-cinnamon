@@ -24,7 +24,7 @@ const notoSerif = Noto_Serif({
 export const metadata: Metadata = {
   title: "Ceylon Cinnamon Company | Finest Ceylon Cinnamon Exporter",
   description:
-    "Premium Ceylon cinnamon cultivator and exporter from Sri Lanka, specializing in authentic whole and ground Ceylon cinnamon."
+    "Premium Ceylon cinnamon cultivator and exporter from Sri Lanka, offering cinnamon sticks, powder, oils, pieces, tea, and toothpicks."
 };
 
 export const viewport = {

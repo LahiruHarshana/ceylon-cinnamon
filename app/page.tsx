@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -21,6 +22,7 @@ import {
   ShieldCheck,
   X
 } from "lucide-react";
+import { products } from "./product-data";
 
 const img    = (f: string) => `/cinnamon/${f}`;
 const newImg = (f: string) => `/new-image/${f}`;
@@ -63,36 +65,6 @@ const processSteps = [
     image: "20241115_150330.jpg",
     body:  "We ensure that our high-quality Ceylon cinnamon is safely delivered to our local and international buyers on time."
   }
-];
-
-const productCards = [
-  {
-    title: "Private Label Solutions",
-    image: "053-CCC-18.png",
-    body:  "Retail-ready private labeling options for buyers who need authentic Ceylon cinnamon under their own brand."
-  },
-  {
-    title: "Ceylon Cinnamon Sticks",
-    image: "059-CCC-4.webp",
-    body:  "Whole Ceylon cinnamon prepared for wholesale and retail buyers seeking authentic quills from Sri Lanka."
-  },
-  {
-    title: "Custom Packaging",
-    image: "043-CCC-15.png",
-    body:  "Bulk, retail, and custom container options tailored to international customer requirements."
-  },
-  {
-    title: "Export Dispatch",
-    image: "048-CCC-17.png",
-    body:  "Prepared shipments for local and international buyers, with attention to safe delivery and presentation."
-  }
-];
-
-const giImages = [
-  "015-ceylon-cinnamon-gi-01.webp",
-  "018-ceylon-cinnamon-gi-02.webp",
-  "021-ceylon-cinnamon-gi-03.webp",
-  "024-ceylon-cinnamon-gi-04.webp"
 ];
 
 const trueCinnamonImages = [
@@ -554,7 +526,7 @@ export default function Home() {
             <span className="font-heading text-xl md:text-2xl uppercase tracking-[0.2em] text-[#1a1108]">
               Ceylon Cinnamon
             </span>
-            <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#9b8472]">Sri Lanka</span>
+            <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#9b8472]">Company</span>
           </div>
         </div>
         <div className="h-[2px] w-36 overflow-hidden rounded-full bg-[#f0e8dc]">
@@ -580,7 +552,7 @@ export default function Home() {
               <span className="font-heading text-sm uppercase tracking-[0.2em] text-[#1a1108] transition-colors group-hover:text-amber-DEFAULT">
                 Ceylon Cinnamon
               </span>
-              <span className="text-[9px] uppercase tracking-[0.3em] text-[#9b8472]">Sri Lanka</span>
+              <span className="text-[9px] uppercase tracking-[0.3em] text-[#9b8472]">Company</span>
             </div>
           </a>
 
@@ -915,65 +887,74 @@ export default function Home() {
         <div className="section-divider" />
 
         {/* ── Products ────────────────────────────────────────── */}
-        <section id="products" className="bg-white px-6 py-24">
-          <div className="mx-auto max-w-6xl">
-            <div className="reveal-up mb-16 text-center">
-              <div className="accent mb-2 text-5xl font-light opacity-[0.07] text-[#a96f24]">
-                Cinnamomum verum
+        <section id="products" className="bg-[#fbfaf8] px-6 py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="reveal-up mb-12 grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+              <div>
+                <div className="section-label">Our Products</div>
+                <h2 className="text-3xl split-heading font-light tracking-tight text-[#1a1108] md:text-5xl">
+                  Catalogue Products
+                </h2>
               </div>
-              <div className="section-label justify-center">Our Products</div>
-              <h2 className="text-3xl split-heading font-light tracking-tight text-[#1a1108] md:text-5xl">
-                Cinnamon Products
-              </h2>
+              <p className="max-w-3xl text-base font-light leading-relaxed text-[#5a4130]">
+                The full product catalogue now includes retail-ready cinnamon sticks, powder, oils,
+                pieces, tea, and toothpicks, each supported by flexible supply terms for wholesale
+                and retail buyers.
+              </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {productCards.map((product) => (
-                <article key={product.title} className="reveal-scale card group overflow-hidden">
-                  <div className="relative aspect-square overflow-hidden">
-                    <Image
-                      src={img(product.image)}
-                      alt={product.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <h3 className="mb-2 text-base font-light text-[#1a1108] transition-colors group-hover:text-amber-DEFAULT">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {products.map((product) => (
+                <article
+                  key={product.slug}
+                  className="reveal-scale group flex h-full flex-col overflow-hidden rounded-lg border border-[#ece7de] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#d7ba92] hover:shadow-lg"
+                >
+                  <Link href={`/products/${product.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-DEFAULT">
+                    <div className="relative aspect-[4/3] bg-[#f3f1ed]">
+                      <Image
+                        src={product.image}
+                        alt={product.title}
+                        fill
+                        sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-contain p-6 transition-transform duration-700 group-hover:scale-[1.035]"
+                      />
+                    </div>
+                  </Link>
+                  <div className="flex flex-1 flex-col p-5">
+                    <div className="mb-4 flex items-center justify-between gap-4">
+                      <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#a96f24]">
+                        {product.category}
+                      </span>
+                      <span className="h-px flex-1 bg-[#eadfd2]" />
+                    </div>
+                    <h3 className="mb-3 text-xl font-light leading-tight text-[#1a1108]">
                       {product.title}
                     </h3>
-                    <p className="text-sm font-light leading-relaxed text-[#9b8472]">{product.body}</p>
+                    <p className="mb-5 flex-1 text-sm font-light leading-relaxed text-[#6c584a]">
+                      {product.summary}
+                    </p>
+                    <Link
+                      href={`/products/${product.slug}`}
+                      className="inline-flex items-center gap-2 self-start text-[11px] font-medium uppercase tracking-[0.18em] text-[#1a1108] transition-colors hover:text-amber-DEFAULT"
+                    >
+                      View details <ArrowRight size={14} strokeWidth={1.7} />
+                    </Link>
                   </div>
                 </article>
               ))}
             </div>
 
-            {/* Packaging */}
-            <div className="reveal-up mt-20 grid gap-10 md:grid-cols-2 md:items-center">
-              <div>
-                <div className="section-label">Packaging Options</div>
-                <h3 className="mb-6 text-3xl font-light text-[#1a1108]">
-                  Flexible supply for{" "}
-                  <span className="serif italic" style={{ color: "var(--amber)" }}>global buyers</span>
-                </h3>
-                <p className="font-light leading-relaxed text-[#5a4130]">
-                  Buyers can choose packaging solutions aligned with their business goals, including bulk packaging,
-                  retail packaging, private labeling, and packaging in specific containers such as resealable pouches
-                  or rigid containers with airtight seals.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {["026-payment.png", "027-shipping.png", "038-frame.png", "025-header_logo.png"].map((image) => (
-                  <div key={image} className="card flex min-h-28 items-center justify-center p-6">
-                    <Image
-                      src={img(image)}
-                      alt="Ceylon Cinnamon Company packaging asset"
-                      width={180} height={72}
-                      className="object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
+            <div className="reveal-up mt-16 grid gap-4 md:grid-cols-3">
+              {[
+                ["Pricing", "Prices depend on quantity, grade, and selected product format."],
+                ["Sizing", "Bottle, packet, box, bale, and tea-bag formats are available by product."],
+                ["Supply", "Wholesale and retail orders can be discussed with the Ceylon Cinnamon Company team."]
+              ].map(([title, body]) => (
+                <div key={title} className="rounded-lg border border-[#ece7de] bg-white p-6">
+                  <h3 className="mb-2 text-sm font-medium uppercase tracking-[0.16em] text-[#1a1108]">{title}</h3>
+                  <p className="text-sm font-light leading-relaxed text-[#6c584a]">{body}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -982,45 +963,19 @@ export default function Home() {
 
         {/* ── GI Certification & Export Board ─────────────────── */}
         <section className="relative overflow-hidden border-y border-amber-border/30 bg-warm-100 py-24">
-          <div className="reveal-up mx-auto mb-12 flex max-w-7xl flex-col items-start justify-between gap-8 px-6 md:flex-row md:items-end">
-            <div className="max-w-2xl">
+          <div className="reveal-up mx-auto max-w-7xl px-6">
+            <div className="max-w-3xl">
               <div className="section-label">EU Certification & Board Recognition</div>
               <h2 className="text-3xl split-heading font-light text-[#1a1108] md:text-4xl pr-4">
                 Geographical Indication{" "}
                 <span className="serif italic" style={{ color: "var(--amber)" }}>Certification</span>
               </h2>
+              <p className="mt-6 text-base font-light leading-relaxed text-[#5a4130] md:text-lg">
+                Ceylon Cinnamon&apos;s Geographical Indication recognition protects its Sri Lankan
+                origin, traditional craftsmanship, and quality reputation, helping buyers identify
+                authentic Ceylon cinnamon in global markets.
+              </p>
             </div>
-
-            {/* EDB Logo Badge */}
-            <div 
-              className="group flex flex-shrink-0 items-center justify-center rounded-2xl border border-amber-border/40 bg-white/60 p-5 backdrop-blur-md transition-all duration-500 hover:bg-white hover:shadow-md"
-              style={{ boxShadow: "var(--shadow-sm)" }}
-            >
-              <Image
-                src={img("025-header_logo.png")}
-                alt="Sri Lanka Export Development Board"
-                width={180} height={53}
-                className="h-10 w-auto object-contain opacity-90 transition-opacity duration-300 group-hover:opacity-100 md:h-12"
-              />
-            </div>
-          </div>
-          <div className="menu-scroll-container reveal-up pb-8">
-            {giImages.map((image, index) => (
-              <div
-                key={image}
-                className="group w-[300px] flex-none overflow-hidden rounded-xl border border-amber-border/40 md:w-[420px]"
-                style={{ boxShadow: "var(--shadow-sm)" }}
-              >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image
-                    src={img(image)}
-                    alt={`GI certification image ${index + 1}`}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -1295,7 +1250,7 @@ export default function Home() {
                   <span className="font-heading text-sm md:text-base uppercase tracking-[0.2em] text-[#1a1108]">
                     Ceylon Cinnamon
                   </span>
-                  <span className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-[#9b8472]">Sri Lanka</span>
+                  <span className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-[#9b8472]">Company</span>
                 </div>
               </div>
               <p className="text-xs uppercase tracking-widest text-[#9b8472]">
