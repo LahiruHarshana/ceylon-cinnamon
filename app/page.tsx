@@ -852,35 +852,55 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="menu-scroll-container reveal-up pb-8">
-            {processSteps.map((step, index) => (
-              <div key={step.title} className="group w-[295px] flex-none md:w-[370px]">
-                <div className="card overflow-hidden">
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image
-                      src={newImg(step.image)}
-                      alt={`${step.title} process`}
-                      fill
-                      sizes="(max-width: 768px) 295px, 370px"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    {/* step number circle */}
-                    <div
-                      className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-white"
-                      style={{ background: "var(--grad-amber)", boxShadow: "var(--shadow-amber)" }}
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
+          <div className="reveal-up mx-auto max-w-7xl px-6">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {processSteps.map((step, index) => (
+                <div
+                  key={step.title}
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-border/40 bg-white p-7 transition-all duration-500 hover:-translate-y-1 hover:border-amber-border/80 hover:shadow-xl"
+                  style={{ boxShadow: "0 2px 16px 0 rgba(180,130,60,0.06)" }}
+                >
+                  {/* large decorative number */}
+                  <span
+                    className="pointer-events-none absolute -right-3 -top-4 select-none font-serif text-[6rem] font-bold leading-none transition-opacity duration-500 group-hover:opacity-100"
+                    style={{ color: "var(--amber)", opacity: 0.07 }}
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* step badge */}
+                  <div
+                    className="mb-6 flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-white shrink-0"
+                    style={{ background: "var(--grad-amber)", boxShadow: "var(--shadow-amber)" }}
+                  >
+                    {String(index + 1).padStart(2, "0")}
                   </div>
-                  <div className="p-5">
-                    <h3 className="mb-2 text-lg font-light text-[#1a1108] transition-colors group-hover:text-amber-DEFAULT">
-                      {step.title}
-                    </h3>
-                    <p className="text-sm font-light leading-relaxed text-[#9b8472]">{step.body}</p>
+
+                  {/* connector line (hidden on last) */}
+                  {index < processSteps.length - 1 && (
+                    <div
+                      className="pointer-events-none absolute right-0 top-[3.25rem] hidden h-px w-5 lg:block"
+                      style={{ background: "var(--grad-amber)", opacity: 0.35, transform: "translateX(100%)" }}
+                    />
+                  )}
+
+                  <h3 className="mb-3 text-lg font-light text-[#1a1108] transition-colors duration-300 group-hover:text-amber-DEFAULT">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm font-light leading-relaxed text-[#9b8472]">{step.body}</p>
+
+                  {/* bottom accent line */}
+                  <div
+                    className="mt-auto pt-6"
+                  >
+                    <div
+                      className="h-[2px] w-8 rounded-full transition-all duration-500 group-hover:w-full"
+                      style={{ background: "var(--grad-amber)" }}
+                    />
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
